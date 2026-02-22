@@ -10,8 +10,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Meow Fin">
-  <meta name="theme-color" content="#f8f9fa">
-  <link rel="apple-touch-icon" href="https://toanthien121314-sys.github.io/TC/icon.png">
+  <meta name="theme-color" content="#000000"> <link rel="apple-touch-icon" href="https://toanthien121314-sys.github.io/TC/icon.png">
   <link rel="icon" type="image/png" href="https://toanthien121314-sys.github.io/TC/icon.png">
 
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -23,12 +22,16 @@
 
   <style>
     /* =========================================
-       1. CẤU HÌNH GIAO DIỆN CỐT LÕI
+       1. CẤU HÌNH GIAO DIỆN CỐT LÕI (HỒNG ĐEN)
        ========================================= */
     :root {
-      --primary-color: #ffc107;
-      --text-color: #212529;
-      --bg-color: #f8f9fa;
+      --primary-color: #ff3385; /* Màu Hồng Dạ Quang */
+      --primary-gradient: linear-gradient(135deg, #ff3385, #ff66a3);
+      --text-color: #f8f9fa; /* Trắng xám cho dễ đọc trên nền đen */
+      --text-muted: #999999;
+      --bg-color: #000000; /* Đen tuyền */
+      --card-bg: #141414; /* Đen nhạt cho các thẻ Card */
+      --border-color: #2a2a2a;
     }
 
     /* Ép tràn viền 100% để loại bỏ khoảng trắng dư thừa */
@@ -56,18 +59,18 @@
        ========================================= */
     #main-app-container { 
       display: block; 
-      height: 100dvh; /* Dùng dvh thay cho vh */
+      height: 100dvh;
       width: 100vw; 
       position: relative; 
-      padding-top: env(safe-area-inset-top); /* Né tai thỏ trên */
-      padding-bottom: env(safe-area-inset-bottom); /* Né cằm iPhone nếu có */
+      padding-top: env(safe-area-inset-top); 
+      padding-bottom: env(safe-area-inset-bottom); 
       box-sizing: border-box;
     }
 
     .main-scroll-area { 
       height: 100%; 
       overflow-y: auto; 
-      padding-bottom: 90px; /* Tăng khoảng trống để không bị thanh tab che */
+      padding-bottom: 90px; 
       padding-top: 10px; 
       -webkit-overflow-scrolling: touch; 
     }
@@ -76,46 +79,89 @@
        3. CÁC THÀNH PHẦN UI (COMPONENT)
        ========================================= */
     .header-balance { 
-      background: linear-gradient(135deg, #ffc107, #ffca2c); 
-      color: #000; 
+      background: var(--primary-gradient); 
+      color: #000; /* Chữ đen trên nền hồng */
       padding: 30px 20px; 
       text-align: center; 
       margin: 15px; 
       border-radius: 25px; 
-      box-shadow: 0 10px 25px rgba(255, 193, 7, 0.25); 
+      box-shadow: 0 10px 25px rgba(255, 51, 133, 0.25); 
     }
 
     .card-box { 
-      background: #fff; 
-      border: 1px solid #e9ecef; 
+      background: var(--card-bg); 
+      border: 1px solid var(--border-color); 
       border-radius: 16px; 
-      box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5); 
       margin-bottom: 12px; 
       padding: 20px; 
     }
 
     .btn-main { 
-      background: linear-gradient(135deg, #ffc107, #ffdb4d); 
+      background: var(--primary-gradient); 
       color: #000; 
       font-weight: 700; 
       border: none; 
       padding: 14px; 
       border-radius: 12px; 
       width: 100%; 
-      box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3); 
+      box-shadow: 0 4px 10px rgba(255, 51, 133, 0.3); 
     }
 
     .form-control, .form-select { 
-      background-color: #fff; 
-      border: 2px solid #eee; 
+      background-color: #0a0a0a; 
+      border: 2px solid var(--border-color); 
+      color: var(--text-color);
       padding: 12px; 
       border-radius: 12px; 
     }
     .form-control:focus, .form-select:focus { 
       border-color: var(--primary-color); 
+      background-color: #0a0a0a;
+      color: var(--text-color);
       outline: none; 
-      box-shadow: none; 
+      box-shadow: 0 0 0 0.25rem rgba(255, 51, 133, 0.25); 
     }
+    
+    /* Fix ngày tháng icon trong dark mode Chrome/Safari */
+    ::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+    }
+
+    /* Ghi đè class Bootstrap cơ bản cho Dark mode */
+    .text-muted { color: var(--text-muted) !important; }
+    .bg-white { background-color: var(--card-bg) !important; }
+    
+    .btn-warning {
+      background-color: var(--primary-color) !important;
+      border-color: var(--primary-color) !important;
+      color: #000 !important;
+    }
+    .text-warning { color: var(--primary-color) !important; }
+    .btn-outline-warning {
+      color: var(--primary-color) !important;
+      border-color: var(--primary-color) !important;
+    }
+    .btn-outline-warning:hover {
+      background-color: var(--primary-color) !important;
+      color: #000 !important;
+    }
+    .btn-outline-dark {
+      color: #fff; border-color: #444;
+    }
+    .btn-outline-dark:hover, .btn-check:checked + .btn-outline-dark {
+      background-color: var(--primary-color);
+      border-color: var(--primary-color);
+      color: #000;
+    }
+    .list-group-item { background-color: transparent; color: var(--text-color); border-color: var(--border-color); }
+    .table { color: var(--text-color); --bs-table-bg: transparent; --bs-table-border-color: var(--border-color); }
+    .table-light { --bs-table-bg: #222; --bs-table-color: #fff; }
+    
+    /* Ghi đè SweetAlert2 cho Dark Theme */
+    .swal2-popup { background-color: #1a1a1a !important; color: #fff !important; border-radius: 20px !important; }
+    .swal2-title, .swal2-html-container { color: #fff !important; }
+    .swal2-input, .swal2-radio { color: #fff !important; }
 
     /* --- HIỆU ỨNG LOADING MƯỢT MÀ --- */
     .glowing-dots {
@@ -141,12 +187,12 @@
       40% { transform: scale(1.2); opacity: 1; }
     }
     .header-balance .glowing-dots span { background-color: #000; } 
-    .container .glowing-dots span { background-color: #000; }
+    .container .glowing-dots span { background-color: var(--primary-color); }
 
     /* MENU STYLE */
     .nav-bar { 
-      background: #fff; 
-      box-shadow: 0 -5px 20px rgba(0,0,0,0.05); 
+      background: #111111; 
+      box-shadow: 0 -5px 20px rgba(255,51,133,0.15); 
       z-index: 1000; 
       display: flex; 
       width: 100%; 
@@ -154,7 +200,7 @@
       align-items: center; 
     }
     .nav-item { 
-      text-align: center; color: #b0b0b0; font-size: 0.75rem; 
+      text-align: center; color: #666; font-size: 0.75rem; 
       cursor: pointer; 
       flex: 1; 
       display: flex; 
@@ -164,18 +210,18 @@
       padding: 12px 0; 
       transition: color 0.2s;
     }
-    .nav-item.active { color: #000; font-weight: 700; } 
-    .nav-item.active i { color: #f59f00; }
+    .nav-item.active { color: #fff; font-weight: 700; } 
+    .nav-item.active i { color: var(--primary-color); }
 
     /* CẤU HÌNH THANH TAB TRÊN MOBILE (Đã ép sát đáy khít sàn) */
     @media (max-width: 991px) { 
       .nav-bar { 
         position: fixed; 
-        bottom: 0 !important; /* Ép sát đáy */
+        bottom: 0 !important; 
         left: 0; 
         width: 100%;
-        height: 65px; /* Chiều cao cố định */
-        padding-bottom: 0 !important; /* Xóa khoảng hở */
+        height: 65px; 
+        padding-bottom: 0 !important; 
         margin-bottom: 0 !important;
         border-top-left-radius: 20px; 
         border-top-right-radius: 20px; 
@@ -197,8 +243,8 @@
     .tab-content.active { display: block; animation: fadeIn 0.3s; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-    .money-inc { color: #198754; font-weight: 700; } 
-    .money-exp { color: #dc3545; font-weight: 700; }
+    .money-inc { color: #20c997; font-weight: 700; }  /* Màu xanh ngọc sáng hơn cho dark mode */
+    .money-exp { color: #ff4d4d; font-weight: 700; }  /* Màu đỏ sáng hơn cho dark mode */
 
     /* --- NÚT CÀI ĐẶT PWA --- */
     #install-btn {
@@ -208,13 +254,13 @@
       left: 50%;
       transform: translateX(-50%);
       padding: 12px 25px;
-      background-color: #ffc107;
+      background-color: var(--primary-color);
       color: #000;
       font-weight: bold;
       font-size: 15px;
-      border: 2px solid #fff;
+      border: 2px solid #000;
       border-radius: 30px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      box-shadow: 0 5px 15px rgba(255,51,133,0.4);
       z-index: 9999;
       cursor: pointer;
       animation: pulse-btn 2s infinite;
@@ -263,9 +309,9 @@
               </div>
             </div>
             <div class="dashboard-full">
-              <h6 class="fw-bold mb-3 ps-3">Tài khoản của tôi</h6>
+              <h6 class="fw-bold mb-3 ps-3 text-light">Tài khoản của tôi</h6>
               <div id="ui-funds-list">
-                <div class="glowing-dots" style="background:#fff; border-radius:10px;"><span></span><span></span><span></span></div>
+                <div class="glowing-dots" style="background:var(--card-bg); border-radius:10px; border: 1px solid var(--border-color);"><span></span><span></span><span></span></div>
               </div>
             </div>
           </div>
@@ -273,7 +319,7 @@
 
         <div id="tab-report" class="tab-content">
            <div class="d-flex justify-content-between align-items-center mb-3 px-2">
-              <h5 class="fw-bold mb-0">Báo cáo</h5>
+              <h5 class="fw-bold mb-0 text-light">Báo cáo</h5>
               <select class="form-select w-auto fw-bold py-1 form-select-sm" id="reportFilter" onchange="handleReportFilter()">
                 <option value="week">Tuần này</option>
                 <option value="month">Tháng này</option>
@@ -286,7 +332,7 @@
            <div id="reportCustomDate" class="custom-date-range row g-2 mx-0 mb-3" style="display:none">
              <div class="col-5"><input type="date" class="form-control form-control-sm" id="repStart"></div>
              <div class="col-5"><input type="date" class="form-control form-control-sm" id="repEnd"></div>
-             <div class="col-2"><button class="btn btn-sm btn-warning w-100" onclick="renderCharts()"><i class="bi bi-search"></i></button></div>
+             <div class="col-2"><button class="btn btn-sm btn-warning w-100" onclick="renderCharts()"><i class="bi bi-search text-dark"></i></button></div>
            </div>
 
           <h6 class="fw-bold text-muted ps-2 mt-2">Dòng tiền thu/chi</h6>
@@ -294,7 +340,7 @@
             <div class="chart-wrapper"><canvas id="chartCombined"></canvas></div>
           </div>
 
-          <hr class="my-4" style="opacity: 0.1">
+          <hr class="my-4" style="border-color: #444;">
           <h6 class="fw-bold text-muted ps-2">Cơ cấu chi tiêu</h6>
           <div class="card-box">
              <div class="mb-3">
@@ -309,14 +355,14 @@
 
         <div id="tab-input" class="tab-content">
           <div class="d-flex justify-content-center align-items-center my-4 gap-3">
-            <h4 class="fw-bold mb-0">Ghi Chép Mới</h4>
-            <button class="btn btn-sm btn-outline-warning text-dark fw-bold" onclick="calcWithdraw()">
+            <h4 class="fw-bold mb-0 text-light">Ghi Chép Mới</h4>
+            <button class="btn btn-sm btn-outline-warning fw-bold" onclick="calcWithdraw()">
               <i class="bi bi-cash-stack"></i> Rút tiền
             </button>
           </div>
           
           <form id="financeForm" class="card-box mx-auto" style="max-width: 500px;">
-            <div class="btn-group w-100 mb-3 rounded-3 overflow-hidden shadow-sm">
+            <div class="btn-group w-100 mb-3 rounded-3 overflow-hidden shadow-sm border border-secondary border-opacity-25">
               <input type="radio" class="btn-check" name="type" id="tChi" value="Chi" checked onchange="toggleMode()">
               <label class="btn btn-outline-dark border-0 py-3" for="tChi">Chi tiêu</label>
               
@@ -343,9 +389,9 @@
 
         <div id="tab-history" class="tab-content">
           <div class="d-flex justify-content-between align-items-center mt-4 mb-3 ps-2 pe-2">
-            <h5 class="fw-bold mb-0">Lịch sử giao dịch</h5>
+            <h5 class="fw-bold mb-0 text-light">Lịch sử giao dịch</h5>
             <div class="d-flex gap-2">
-              <button class="btn btn-sm btn-outline-secondary fw-bold" onclick="undoArchive()" title="Hoàn tác lần nén cuối">
+              <button class="btn btn-sm btn-outline-light fw-bold border-secondary" onclick="undoArchive()" title="Hoàn tác lần nén cuối">
                 <i class="bi bi-arrow-counterclockwise"></i>
               </button>
               <button class="btn btn-sm btn-warning fw-bold text-dark shadow-sm" onclick="showCompressionMenu()">
@@ -362,7 +408,7 @@
           <div id="histCustomDate" class="custom-date-range row g-2 mb-3 px-2" style="display:none">
             <div class="col-5"><input type="date" class="form-control form-control-sm" id="histStart"></div>
             <div class="col-5"><input type="date" class="form-control form-control-sm" id="histEnd"></div>
-            <div class="col-2"><button class="btn btn-sm btn-warning w-100" onclick="renderHistoryList()"><i class="bi bi-search"></i></button></div>
+            <div class="col-2"><button class="btn btn-sm btn-warning w-100" onclick="renderHistoryList()"><i class="bi bi-search text-dark"></i></button></div>
           </div>
           <div id="ui-history-list">
             <div class="glowing-dots mt-5" style="background:none"><span></span><span></span><span></span></div>
@@ -370,15 +416,14 @@
         </div>
 
         <div id="tab-manage" class="tab-content">
-          <h5 class="fw-bold mb-3 mt-4 ps-2">Cài đặt</h5>
+          <h5 class="fw-bold mb-3 mt-4 ps-2 text-light">Cài đặt</h5>
           <div class="card-box">
             <h6 class="fw-bold text-warning mb-3">Danh mục</h6>
-            <button class="btn btn-warning btn-sm w-100 mb-3 fw-bold" onclick="addCat()">+ THÊM MỚI</button>
+            <button class="btn btn-warning btn-sm w-100 mb-3 fw-bold text-dark" onclick="addCat()">+ THÊM MỚI</button>
             <ul class="list-group list-group-flush" id="listCat"></ul>
           </div>
           <div class="card-box mt-3">
-            <h6 class="fw-bold text-primary mb-3">Quỹ tiền</h6>
-            <button class="btn btn-primary btn-sm w-100 mb-3 fw-bold" onclick="addFund()">+ TẠO QUỸ MỚI</button>
+            <h6 class="fw-bold text-info mb-3">Quỹ tiền</h6> <button class="btn btn-info btn-sm w-100 mb-3 fw-bold text-dark" onclick="addFund()">+ TẠO QUỸ MỚI</button>
             <ul class="list-group list-group-flush" id="listFund"></ul>
           </div>
           <div class="card-box mt-3">
@@ -404,11 +449,16 @@
     // LƯU Ý: THAY ĐƯỜNG LINK DƯỚI ĐÂY BẰNG LINK API MỚI CỦA BẠN NẾU CÓ
     const API_URL = "https://script.google.com/macros/s/AKfycbxlv3OI0Hvw1obMuKwlx6Y3hoOdfIV3dw0oKLfQacz66AM_qruN4i9a1QkfW9uamIa8YA/exec"; 
 
+    // CHARTJS GLOBAL DARK MODE CONFIG 
+    Chart.defaults.color = '#aaaaaa';
+    Chart.defaults.borderColor = '#333333';
+
     let GLOBAL_DATA = { history:[], funds:[], categories:[], balances:{} };
     let CHART_COMBINED = null; 
     let CHART_FUND = null; 
     let CURRENT_HIST_FILTER = 'week';
-    const PIE_COLORS = ['#ffc107', '#fd7e14', '#dc3545', '#e83e8c', '#6f42c1', '#0d6efd', '#0dcaf0', '#198754', '#20c997', '#6c757d'];
+    // Đổi màu đầu tiên trong mảng PIE thành màu hồng dạ quang
+    const PIE_COLORS = ['#ff3385', '#fd7e14', '#dc3545', '#e83e8c', '#6f42c1', '#0d6efd', '#0dcaf0', '#198754', '#20c997', '#6c757d'];
     let currentFetchId = 0;
 
     // --- PWA INSTALL LOGIC ---
@@ -531,7 +581,7 @@
 
         callGoogleApi('getAppData').then(res => { 
             if (fetchId !== currentFetchId) return;
-            if (JSON.stringify(res) === localStorage.getItem('meowFinCache')) return; // Không đổi thì không vẽ lại
+            if (JSON.stringify(res) === localStorage.getItem('meowFinCache')) return; 
 
             GLOBAL_DATA = res; 
             localStorage.setItem('meowFinCache', JSON.stringify(res));
@@ -541,7 +591,7 @@
 
     function saveData() { 
         const amt = document.getElementById('inpAmount').value.replace(/\./g, ''); 
-        if(!amt) return Swal.fire({title:'Thiếu số tiền!', icon:'warning', confirmButtonColor:'#ffc107'}); 
+        if(!amt) return Swal.fire({title:'Thiếu số tiền!', icon:'warning', confirmButtonColor:'#ff3385'}); 
         Swal.fire({title:'Đang lưu...', didOpen:()=>Swal.showLoading(), allowOutsideClick:false}); 
         
         const payload = { 
@@ -576,11 +626,11 @@
     }
 
     // --- CÁC HÀM QUẢN LÝ QUỸ & DANH MỤC ---
-    function addCat() { Swal.fire({title:'Thêm danh mục', input:'text', showCancelButton:true}).then(r => { if(r.value) { Swal.fire({title:'Đang lưu...', didOpen:()=>Swal.showLoading()}); callGoogleApi('addCategory', r.value).then(()=>{ Swal.close(); loadData(); }); } }); }
-    function addFund() { Swal.fire({title:'Thêm quỹ', input:'text', showCancelButton:true}).then(r => { if(r.value) { Swal.fire({title:'Đang lưu...', didOpen:()=>Swal.showLoading()}); callGoogleApi('createFund', r.value).then(()=>{ Swal.close(); loadData(); }); } }); }
+    function addCat() { Swal.fire({title:'Thêm danh mục', input:'text', confirmButtonColor:'#ff3385', showCancelButton:true}).then(r => { if(r.value) { Swal.fire({title:'Đang lưu...', didOpen:()=>Swal.showLoading()}); callGoogleApi('addCategory', r.value).then(()=>{ Swal.close(); loadData(); }); } }); }
+    function addFund() { Swal.fire({title:'Thêm quỹ', input:'text', confirmButtonColor:'#ff3385', showCancelButton:true}).then(r => { if(r.value) { Swal.fire({title:'Đang lưu...', didOpen:()=>Swal.showLoading()}); callGoogleApi('createFund', r.value).then(()=>{ Swal.close(); loadData(); }); } }); }
     
     function delCat(n) { 
-        Swal.fire({ title: 'Xóa danh mục?', html: `Xóa <b>${n}</b>?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#6c757d', confirmButtonText: 'Xóa ngay' }).then(r => { 
+        Swal.fire({ title: 'Xóa danh mục?', html: `Xóa <b class="text-warning">${n}</b>?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#6c757d', confirmButtonText: 'Xóa ngay' }).then(r => { 
             if(r.isConfirmed) {
                 Swal.fire({title: 'Đang xóa...', didOpen: () => Swal.showLoading()});
                 callGoogleApi('deleteCategory', n).then(() => { Swal.close(); loadData(); }); 
@@ -589,7 +639,7 @@
     }
 
     function delFund(n) { 
-        Swal.fire({ title: 'Xóa quỹ tiền?', html: `Xóa <b>${n}</b>?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#6c757d', confirmButtonText: 'Xóa ngay' }).then(r => { 
+        Swal.fire({ title: 'Xóa quỹ tiền?', html: `Xóa <b class="text-info">${n}</b>?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#6c757d', confirmButtonText: 'Xóa ngay' }).then(r => { 
             if(r.isConfirmed) {
                 Swal.fire({title: 'Đang xóa...', didOpen: () => Swal.showLoading()});
                 callGoogleApi('deleteFund', n).then(() => { Swal.close(); loadData(); }); 
@@ -605,7 +655,7 @@
         input: 'radio',
         inputOptions: { 'week': 'Cũ hơn 7 ngày (Giữ lại tuần này)', 'month': 'Trước tháng này (Giữ lại tháng này)', 'year': 'Trước năm nay', 'custom': 'Tùy chọn ngày...' },
         inputValue: 'month', 
-        showCancelButton: true, confirmButtonColor: '#ffc107', confirmButtonText: 'Thực hiện nén', cancelButtonText: 'Hủy'
+        showCancelButton: true, confirmButtonColor: '#ff3385', confirmButtonText: 'Thực hiện nén', cancelButtonText: 'Hủy'
       }).then((result) => {
         if (result.isConfirmed) {
           if (result.value === 'custom') showCustomCompressionDialog();
@@ -617,8 +667,8 @@
     function showCustomCompressionDialog() {
       Swal.fire({
         title: 'Chọn khoảng nén',
-        html: `<div class="text-start"><label>Từ ngày:</label><input type="date" id="archiveStart" class="form-control mb-2"><label>Đến ngày:</label><input type="date" id="archiveEnd" class="form-control"></div>`,
-        showCancelButton: true, confirmButtonColor: '#ffc107',
+        html: `<div class="text-start"><label>Từ ngày:</label><input type="date" id="archiveStart" class="form-control mb-2 bg-dark text-white"><label>Đến ngày:</label><input type="date" id="archiveEnd" class="form-control bg-dark text-white"></div>`,
+        showCancelButton: true, confirmButtonColor: '#ff3385',
         preConfirm: () => {
           const s = document.getElementById('archiveStart').value;
           const e = document.getElementById('archiveEnd').value;
@@ -633,7 +683,7 @@
     function executeCompression(p1, p2 = null) {
       Swal.fire({ title: 'Đang xử lý...', text: 'Đang tạo file nén và tính toán lại số dư...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
       callGoogleApi('archiveDataByPeriod', {p1: p1, p2: p2}).then(msg => {
-        Swal.fire({ title: 'Kết quả', text: msg, icon: msg.includes('Lỗi') ? 'error' : 'success' });
+        Swal.fire({ title: 'Kết quả', text: msg, icon: msg.includes('Lỗi') ? 'error' : 'success', confirmButtonColor: '#ff3385' });
         loadData(); 
       });
     }
@@ -646,7 +696,7 @@
         if (r.isConfirmed) {
           Swal.fire({ title: 'Đang khôi phục...', didOpen: () => Swal.showLoading() });
           callGoogleApi('undoLastArchive').then(msg => {
-            Swal.fire('Thông báo', msg, 'info');
+            Swal.fire({title: 'Thông báo', text: msg, icon: 'info', confirmButtonColor: '#ff3385'});
             loadData();
           });
         }
@@ -665,10 +715,10 @@
             html += `
               <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
                 <div class="text-truncate me-2" style="flex:1; cursor:pointer" onclick="viewArchiveData('${f.id}', '${f.name}')">
-                  <small class="fw-bold"><i class="bi bi-filetype-json text-warning me-2"></i>${f.name}</small>
+                  <small class="fw-bold text-light"><i class="bi bi-filetype-json text-warning me-2"></i>${f.name}</small>
                 </div>
                 <div class="d-flex gap-3">
-                  <i class="bi bi-pencil-square text-primary" onclick="renameArchive('${f.id}', '${f.name}')" style="cursor:pointer" title="Đổi tên"></i>
+                  <i class="bi bi-pencil-square text-info" onclick="renameArchive('${f.id}', '${f.name}')" style="cursor:pointer" title="Đổi tên"></i>
                   <i class="bi bi-eye text-success" onclick="viewArchiveData('${f.id}', '${f.name}')" style="cursor:pointer" title="Xem chi tiết"></i>
                 </div>
               </div>`;
@@ -681,13 +731,13 @@
     function renameArchive(id, oldName) {
       let displayName = oldName.replace('.json', '');
       Swal.fire({
-        title: 'Đổi tên bản lưu', input: 'text', inputValue: displayName, showCancelButton: true, confirmButtonText: 'Lưu tên mới', confirmButtonColor: '#ffc107', cancelButtonText: 'Hủy',
+        title: 'Đổi tên bản lưu', input: 'text', inputValue: displayName, showCancelButton: true, confirmButtonText: 'Lưu tên mới', confirmButtonColor: '#ff3385', cancelButtonText: 'Hủy',
         inputValidator: (value) => { if (!value) return 'Tên không được để trống!'; }
       }).then((result) => {
         if (result.isConfirmed) {
           Swal.fire({ title: 'Đang đổi tên...', didOpen: () => Swal.showLoading() });
           callGoogleApi('renameArchiveFile', {id: id, newName: result.value}).then(msg => {
-            Swal.fire('Hoàn tất', msg, 'success');
+            Swal.fire({title:'Hoàn tất', text:msg, icon:'success', confirmButtonColor:'#ff3385'});
             showArchives(); 
           });
         }
@@ -716,11 +766,11 @@
         let html = `
           <div style="text-align: left; font-family: 'Be Vietnam Pro', sans-serif;">
             <div class="d-flex gap-2">
-                <div class="flex-fill p-2 rounded-3 bg-success bg-opacity-10 border border-success border-opacity-25 text-center">
+                <div class="flex-fill p-2 rounded-3 bg-success bg-opacity-25 border border-success border-opacity-50 text-center">
                 <small class="text-success fw-bold">Tổng Thu</small><br>
                 <span class="fw-bold text-success">+<span id="anim-popup-thu">0</span></span>
                 </div>
-                  <div class="flex-fill p-2 rounded-3 bg-danger bg-opacity-10 border border-danger border-opacity-25 text-center">
+                  <div class="flex-fill p-2 rounded-3 bg-danger bg-opacity-25 border border-danger border-opacity-50 text-center">
                   <small class="text-danger fw-bold">Tổng Chi</small><br>
                   <span class="fw-bold text-danger">-<span id="anim-popup-chi">0</span></span>
                   </div>
@@ -729,10 +779,10 @@
               <div class="col-12"><canvas id="archiveChartBar" style="height:200px"></canvas></div>
               <div class="col-12 mt-3"><canvas id="archiveChartPie" style="height:200px"></canvas></div>
             </div>
-            <h6 class="fw-bold mb-2"><i class="bi bi-list-ul"></i> Chi tiết giao dịch</h6>
+            <h6 class="fw-bold mb-2 text-light"><i class="bi bi-list-ul"></i> Chi tiết giao dịch</h6>
             <div class="table-responsive" style="max-height: 300px; font-size: 0.75rem;">
-              <table class="table table-sm table-hover border">
-                <thead class="table-light sticky-top">
+              <table class="table table-dark table-sm table-hover border">
+                <thead class="sticky-top" style="z-index: 1;">
                   <tr><th>Ngày</th><th>Mục</th><th>Số tiền</th></tr>
                 </thead>
                 <tbody>
@@ -749,7 +799,7 @@
         `;
 
         Swal.fire({
-          title: `<small class="fs-6 text-muted">Bản lưu:</small><br>${name}`, html: html, width: '98%',
+          title: `<small class="fs-6 text-muted">Bản lưu:</small><br><span class="text-light">${name}</span>`, html: html, width: '98%',
           showDenyButton: true, showCancelButton: true, showConfirmButton: false, 
           denyButtonText: '<i class="bi bi-arrow-counterclockwise"></i> Khôi phục vào sổ', denyButtonColor: '#198754', 
           cancelButtonText: 'Đóng', cancelButtonColor: '#6c757d',
@@ -760,14 +810,14 @@
             new Chart(document.getElementById('archiveChartBar'), {
               type: 'bar',
               data: { labels: days.map(d => d.split('-').reverse().slice(0,2).join('/')),
-                datasets: [ { label: 'Thu', data: days.map(d => chartDataDaily[d].thu), backgroundColor: '#198754' }, { label: 'Chi', data: days.map(d => chartDataDaily[d].chi), backgroundColor: '#dc3545' } ] },
-              options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+                datasets: [ { label: 'Thu', data: days.map(d => chartDataDaily[d].thu), backgroundColor: '#20c997' }, { label: 'Chi', data: days.map(d => chartDataDaily[d].chi), backgroundColor: '#ff4d4d' } ] },
+              options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#333'} }, y: { grid: { color: '#333'} } } }
             });
             const cats = Object.keys(chartDataCat);
             new Chart(document.getElementById('archiveChartPie'), {
               type: 'doughnut',
-              data: { labels: cats, datasets: [{ data: Object.values(chartDataCat), backgroundColor: PIE_COLORS }] },
-              options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } } }
+              data: { labels: cats, datasets: [{ data: Object.values(chartDataCat), backgroundColor: PIE_COLORS, borderWidth: 0 }] },
+              options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 }, color: '#fff' } } } }
             });
           }
         }).then((result) => {
@@ -779,7 +829,7 @@
               if (r.isConfirmed) {
                 Swal.fire({ title: 'Đang khôi phục...', didOpen: () => Swal.showLoading() });
                 callGoogleApi('restoreDataFromDrive', id).then(msg => {
-                  Swal.fire('Thành công', msg, 'success');
+                  Swal.fire({title:'Thành công', text:msg, icon:'success', confirmButtonColor:'#ff3385'});
                   loadData(); 
                   showArchives(); 
                 });
@@ -830,7 +880,7 @@
 
         const rL = (a, n, c) => a.map(i => `<li class="list-group-item d-flex justify-content-between px-0 border-0">${i}<i class="bi bi-trash text-${c}" onclick="${n}('${i}')"></i></li>`).join(''); 
         document.getElementById('listCat').innerHTML = rL(data.categories, 'delCat', 'danger'); 
-        document.getElementById('listFund').innerHTML = rL(data.funds, 'delFund', 'primary'); 
+        document.getElementById('listFund').innerHTML = rL(data.funds, 'delFund', 'info'); 
 
         if(document.getElementById('tab-report').classList.contains('active')) renderCharts(); 
     }
@@ -839,8 +889,8 @@
         const f = GLOBAL_DATA.history.filter(i => isDateInRange(i.timestamp, CURRENT_HIST_FILTER, 'histStart', 'histEnd')); 
         let hH = f.length ? '' : '<p class="text-center py-5 text-muted">Không có dữ liệu</p>'; 
         f.forEach(h => { 
-            let c = h.type==='Thu'?'money-inc':(h.type==='Chi'?'money-exp':'text-primary'); 
-            hH += `<div class="card-box py-3"><div class="d-flex justify-content-between"><div><div class="fw-bold">${h.type==='Chuyen'?`Chuyển: ${h.fund}➔${h.toFund}`:h.category}</div><small class="text-muted">${h.dateStr}${h.note?` • ${h.note}`:''}</small></div><div class="text-end"><div class="${c} fs-5">${h.type==='Chi'?'-':'+'}${Number(h.amount).toLocaleString()}</div><i class="bi bi-trash3 text-danger opacity-50" onclick="delTx(${h.rowIndex})"></i></div></div></div>`; 
+            let c = h.type==='Thu'?'money-inc':(h.type==='Chi'?'money-exp':'text-info'); 
+            hH += `<div class="card-box py-3"><div class="d-flex justify-content-between"><div><div class="fw-bold text-light">${h.type==='Chuyen'?`Chuyển: ${h.fund}➔${h.toFund}`:h.category}</div><small class="text-muted">${h.dateStr}${h.note?` • ${h.note}`:''}</small></div><div class="text-end"><div class="${c} fs-5">${h.type==='Chi'?'-':'+'}${Number(h.amount).toLocaleString()}</div><i class="bi bi-trash3 text-danger opacity-50" style="cursor:pointer;" onclick="delTx(${h.rowIndex})"></i></div></div></div>`; 
         }); 
         document.getElementById('ui-history-list').innerHTML = hH; 
     }
@@ -871,8 +921,8 @@
         if(CHART_COMBINED) CHART_COMBINED.destroy(); 
         CHART_COMBINED = new Chart(document.getElementById('chartCombined'), { 
             type:'bar', 
-            data:{ labels:sK.map(k=>tL[k].d), datasets:[ {label:'Chi', data:sK.map(k=>tL[k].ex), type:'line', borderColor:'#dc3545', tension:0.4, yAxisID:'y1'}, {label:'Thu', data:sK.map(k=>tL[k].in), backgroundColor:'rgba(25,135,84,0.1)', borderColor:'#198754', borderWidth:2, borderRadius:5, yAxisID:'y'} ] }, 
-            options:{ responsive:true, maintainAspectRatio:false, plugins: { legend: { display: false } }, scales:{ y:{ position:'left', title:{display:true,text:'Thu'}, grid:{display:false}, ticks: { display: false } }, y1:{ position:'right', title:{display:true,text:'Chi'}, grid:{drawOnChartArea:false}, ticks: { display: false } } } } 
+            data:{ labels:sK.map(k=>tL[k].d), datasets:[ {label:'Chi', data:sK.map(k=>tL[k].ex), type:'line', borderColor:'#ff4d4d', tension:0.4, yAxisID:'y1'}, {label:'Thu', data:sK.map(k=>tL[k].in), backgroundColor:'rgba(32,201,151,0.2)', borderColor:'#20c997', borderWidth:2, borderRadius:5, yAxisID:'y'} ] }, 
+            options:{ responsive:true, maintainAspectRatio:false, plugins: { legend: { display: false } }, scales:{ y:{ position:'left', title:{display:true,text:'Thu', color:'#ccc'}, grid:{display:false}, ticks: { display: false } }, y1:{ position:'right', title:{display:true,text:'Chi', color:'#ccc'}, grid:{drawOnChartArea:false}, ticks: { display: false } }, x: { grid: { color: '#333' } } } } 
         }); 
 
         const selectedFund = document.getElementById('reportFundFilter').value;
@@ -894,7 +944,7 @@
         if (pieValues.length > 0) {
             CHART_FUND = new Chart(document.getElementById('chartFund'), {
                 type: 'doughnut', data: { labels: pieLabels, datasets: [{ data: pieValues, backgroundColor: PIE_COLORS, borderWidth: 0 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: {size: 11} } } } }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: {size: 11}, color: '#ccc' } } } }
             });
         }
     }
@@ -931,14 +981,14 @@
     function calcWithdraw() { 
         const cur = GLOBAL_DATA.balances['Tiền mặt']||0; 
         Swal.fire({
-            title:'Rút tiền', html:`Tiền mặt hiện tại: <b>${cur.toLocaleString()}đ</b><br>Nhập số tiền mong muốn:`, input:'text', confirmButtonColor:'#ffc107', showCancelButton:true,
+            title:'Rút tiền', html:`Tiền mặt hiện tại: <b class="text-warning">${cur.toLocaleString()}đ</b><br>Nhập số tiền mong muốn:`, input:'text', confirmButtonColor:'#ff3385', showCancelButton:true,
             didOpen: () => { const input = Swal.getInput(); input.oninput = function() { let v = this.value.replace(/[^0-9]/g, ''); if(v) this.value = parseInt(v).toLocaleString('vi-VN'); }; }
         }).then(r => { 
             if(r.isConfirmed && r.value) { 
                 const t = parseInt(r.value.replace(/\./g,'')); const n = t-cur; 
                 if(n<=0) return Swal.fire('Đã đủ tiền!', '', 'info'); 
                 const d = Math.floor(n/50000)*50000; const l = n - d;
-                Swal.fire('Kết quả', `Rút: <b class="fs-4 text-success">${d.toLocaleString()}đ</b><br>Lẻ: ${l.toLocaleString()}đ`, 'success'); 
+                Swal.fire({title:'Kết quả', html:`Rút: <b class="fs-4 text-success">${d.toLocaleString()}đ</b><br>Lẻ: ${l.toLocaleString()}đ`, icon:'success', confirmButtonColor:'#ff3385'}); 
             } 
         }); 
     }
