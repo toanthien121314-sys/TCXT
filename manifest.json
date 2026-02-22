@@ -1,0 +1,21 @@
+{
+  "short_name": "Meow Fin",
+  "name": "Quản Lý Tài Chính Pro",
+  "icons": [
+    {
+      "src": "https://toanthien121314-sys.github.io/TCXT/icon.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "https://toanthien121314-sys.github.io/TCXT/icon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "https://toanthien121314-sys.github.io/TCXT/index.html",
+  "display": "standalone",
+  "scope": "https://toanthien121314-sys.github.io/TCXT/",
+  "background_color": "#f8f9fa",
+  "theme_color": "#f8f9fa"
+}
