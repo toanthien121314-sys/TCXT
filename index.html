@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <title>Quản Lý Tài Chính</title>
+  
+  <link rel="manifest" href="https://toanthien121314-sys.github.io/TC/manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Meow Fin">
+  <meta name="theme-color" content="#f8f9fa">
+  <link rel="apple-touch-icon" href="https://toanthien121314-sys.github.io/TC/icon.png">
+  <link rel="icon" type="image/png" href="https://toanthien121314-sys.github.io/TC/icon.png">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script> 
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* =========================================
+       1. CẤU HÌNH GIAO DIỆN CỐT LÕI
+       ========================================= */
+    :root {
+      --primary-color: #ffc107;
+      --text-color: #212529;
+      --bg-color: #f8f9fa;
+    }
+
+    /* Ép tràn viền 100% để loại bỏ khoảng trắng dư thừa */
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
+      height: 100% !important;
+      width: 100% !important;
+      overflow: hidden;
+      background-color: var(--bg-color);
+      color: var(--text-color); 
+      font-family: 'Be Vietnam Pro', sans-serif; 
+      -webkit-user-select: none; 
+      user-select: none;
+      overscroll-behavior: none;
+    }
+
+    input, textarea { 
+      -webkit-user-select: text; 
+      user-select: text; 
+    }
+
+    /* =========================================
+       2. KHUNG CHỨA APP CHÍNH (Đã tối ưu Toàn màn hình)
+       ========================================= */
+    #main-app-container { 
+      display: block; 
+      height: 100dvh; /* Dùng dvh thay cho vh */
+      width: 100vw; 
+      position: relative; 
+      padding-top: env(safe-area-inset-top); /* Né tai thỏ trên */
+      padding-bottom: env(safe-area-inset-bottom); /* Né cằm iPhone nếu có */
+      box-sizing: border-box;
+    }
+
+    .main-scroll-area { 
+      height: 100%; 
+      overflow-y: auto; 
+      padding-bottom: 90px; /* Tăng khoảng trống để không bị thanh tab che */
+      padding-top: 10px; 
+      -webkit-overflow-scrolling: touch; 
+    }
+
+    /* =========================================
+       3. CÁC THÀNH PHẦN UI (COMPONENT)
+       ========================================= */
+    .header-balance { 
+      background: linear-gradient(135deg, #ffc107, #ffca2c); 
+      color: #000; 
+      padding: 30px 20px; 
+      text-align: center; 
+      margin: 15px; 
+      border-radius: 25px; 
+      box-shadow: 0 10px 25px rgba(255, 193, 7, 0.25); 
+    }
+
+    .card-box { 
+      background: #fff; 
+      border: 1px solid #e9ecef; 
+      border-radius: 16px; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
+      margin-bottom: 12px; 
+      padding: 20px; 
+    }
+
+    .btn-main { 
+      background: linear-gradient(135deg, #ffc107, #ffdb4d); 
+      color: #000; 
+      font-weight: 700; 
+      border: none; 
+      padding: 14px; 
+      border-radius: 12px; 
+      width: 100%; 
+      box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3); 
+    }
+
+    .form-control, .form-select { 
+      background-color: #fff; 
+      border: 2px solid #eee; 
+      padding: 12px; 
+      border-radius: 12px; 
+    }
+    .form-control:focus, .form-select:focus { 
+      border-color: var(--primary-color); 
+      outline: none; 
+      box-shadow: none; 
+    }
+
+    /* --- HIỆU ỨNG LOADING MƯỢT MÀ --- */
+    .glowing-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 15px;
+    }
+    .glowing-dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background-color: #000;
+      display: inline-block;
+      animation: wave-bounce 1.2s infinite ease-in-out;
+    }
+    .glowing-dots span:nth-child(1) { animation-delay: 0s; }
+    .glowing-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .glowing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes wave-bounce {
+      0%, 80%, 100% { transform: scale(0.8); opacity: 0.3; } 
+      40% { transform: scale(1.2); opacity: 1; }
+    }
+    .header-balance .glowing-dots span { background-color: #000; } 
+    .container .glowing-dots span { background-color: #000; }
+
+    /* MENU STYLE */
+    .nav-bar { 
+      background: #fff; 
+      box-shadow: 0 -5px 20px rgba(0,0,0,0.05); 
+      z-index: 1000; 
+      display: flex; 
+      width: 100%; 
+      justify-content: space-around; 
+      align-items: center; 
+    }
+    .nav-item { 
+      text-align: center; color: #b0b0b0; font-size: 0.75rem; 
+      cursor: pointer; 
+      flex: 1; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+      padding: 12px 0; 
+      transition: color 0.2s;
+    }
+    .nav-item.active { color: #000; font-weight: 700; } 
+    .nav-item.active i { color: #f59f00; }
+
+    /* CẤU HÌNH THANH TAB TRÊN MOBILE (Đã ép sát đáy khít sàn) */
+    @media (max-width: 991px) { 
+      .nav-bar { 
+        position: fixed; 
+        bottom: 0 !important; /* Ép sát đáy */
+        left: 0; 
+        width: 100%;
+        height: 65px; /* Chiều cao cố định */
+        padding-bottom: 0 !important; /* Xóa khoảng hở */
+        margin-bottom: 0 !important;
+        border-top-left-radius: 20px; 
+        border-top-right-radius: 20px; 
+      } 
+      .chart-wrapper { height: 320px; } 
+    }
+    
+    @media (min-width: 992px) { 
+      .nav-bar { 
+        position: fixed; top: 0; height: 70px; 
+        padding: 0 10%; justify-content: center; gap: 40px; 
+      } 
+      .main-scroll-area { margin-top: 70px; height: calc(100vh - 70px); } 
+      .container { max-width: 900px; } 
+      .chart-wrapper { height: 400px; } 
+    }
+
+    .tab-content { display: none; } 
+    .tab-content.active { display: block; animation: fadeIn 0.3s; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .money-inc { color: #198754; font-weight: 700; } 
+    .money-exp { color: #dc3545; font-weight: 700; }
+
+    /* --- NÚT CÀI ĐẶT PWA --- */
+    #install-btn {
+      display: none; 
+      position: fixed;
+      bottom: 80px; 
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 25px;
+      background-color: #ffc107;
+      color: #000;
+      font-weight: bold;
+      font-size: 15px;
+      border: 2px solid #fff;
+      border-radius: 30px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      z-index: 9999;
+      cursor: pointer;
+      animation: pulse-btn 2s infinite;
+    }
+    
+    @keyframes pulse-btn {
+      0% { transform: translateX(-50%) scale(1); }
+      50% { transform: translateX(-50%) scale(1.05); }
+      100% { transform: translateX(-50%) scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="main-app-container">
+    
+    <div class="nav-bar">
+      <div class="nav-item active" onclick="switchTab('tab-home', this)">
+        <i class="bi bi-grid-fill fs-4"></i><span>Tổng quan</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('tab-report', this)">
+        <i class="bi bi-bar-chart-fill fs-4"></i><span>Báo cáo</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('tab-input', this)">
+        <i class="bi bi-plus-circle-fill fs-4"></i><span>Nhập liệu</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('tab-history', this)">
+        <i class="bi bi-clock-history fs-4"></i><span>Lịch sử</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('tab-manage', this)">
+        <i class="bi bi-sliders fs-4"></i><span>Cài đặt</span>
+      </div>
+    </div>
+
+    <div class="main-scroll-area">
+      <div class="container main-content mt-3">
+        
+        <div id="tab-home" class="tab-content active">
+          <div class="dashboard-grid">
+            <div class="dashboard-full">
+              <div class="header-balance">
+                <small class="text-uppercase fw-bold opacity-75">Tổng tài sản hiện có</small>
+                <h1 class="fw-bold mt-2 display-4" id="ui-total">
+                  <div class="glowing-dots"><span></span><span></span><span></span></div>
+                </h1>
+              </div>
+            </div>
+            <div class="dashboard-full">
+              <h6 class="fw-bold mb-3 ps-3">Tài khoản của tôi</h6>
+              <div id="ui-funds-list">
+                <div class="glowing-dots" style="background:#fff; border-radius:10px;"><span></span><span></span><span></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div id="tab-report" class="tab-content">
+           <div class="d-flex justify-content-between align-items-center mb-3 px-2">
+              <h5 class="fw-bold mb-0">Báo cáo</h5>
+              <select class="form-select w-auto fw-bold py-1 form-select-sm" id="reportFilter" onchange="handleReportFilter()">
+                <option value="week">Tuần này</option>
+                <option value="month">Tháng này</option>
+                <option value="year">Năm nay</option>
+                <option value="all">Tất cả</option>
+                <option value="custom">Tùy chỉnh...</option>
+              </select>
+           </div>
+           
+           <div id="reportCustomDate" class="custom-date-range row g-2 mx-0 mb-3" style="display:none">
+             <div class="col-5"><input type="date" class="form-control form-control-sm" id="repStart"></div>
+             <div class="col-5"><input type="date" class="form-control form-control-sm" id="repEnd"></div>
+             <div class="col-2"><button class="btn btn-sm btn-warning w-100" onclick="renderCharts()"><i class="bi bi-search"></i></button></div>
+           </div>
+
+          <h6 class="fw-bold text-muted ps-2 mt-2">Dòng tiền thu/chi</h6>
+          <div class="card-box">
+            <div class="chart-wrapper"><canvas id="chartCombined"></canvas></div>
+          </div>
+
+          <hr class="my-4" style="opacity: 0.1">
+          <h6 class="fw-bold text-muted ps-2">Cơ cấu chi tiêu</h6>
+          <div class="card-box">
+             <div class="mb-3">
+                <select class="form-select fw-bold" id="reportFundFilter" onchange="renderCharts()">
+                   <option value="all">Tất cả các quỹ</option>
+                </select>
+             </div>
+             <div class="chart-wrapper position-relative"><canvas id="chartFund"></canvas></div>
+             <div id="fundTotalDisplay" class="text-center mt-3 fw-bold fs-5 text-danger"></div>
+          </div>
+        </div>
+
+        <div id="tab-input" class="tab-content">
+          <div class="d-flex justify-content-center align-items-center my-4 gap-3">
+            <h4 class="fw-bold mb-0">Ghi Chép Mới</h4>
+            <button class="btn btn-sm btn-outline-warning text-dark fw-bold" onclick="calcWithdraw()">
+              <i class="bi bi-cash-stack"></i> Rút tiền
+            </button>
+          </div>
+          
+          <form id="financeForm" class="card-box mx-auto" style="max-width: 500px;">
+            <div class="btn-group w-100 mb-3 rounded-3 overflow-hidden shadow-sm">
+              <input type="radio" class="btn-check" name="type" id="tChi" value="Chi" checked onchange="toggleMode()">
+              <label class="btn btn-outline-dark border-0 py-3" for="tChi">Chi tiêu</label>
+              
+              <input type="radio" class="btn-check" name="type" id="tThu" value="Thu" onchange="toggleMode()">
+              <label class="btn btn-outline-dark border-0 py-3" for="tThu">Thu nhập</label>
+              
+              <input type="radio" class="btn-check" name="type" id="tChuyen" value="Chuyen" onchange="toggleMode()">
+              <label class="btn btn-outline-dark border-0 py-3" for="tChuyen">Chuyển</label>
+            </div>
+
+            <div class="mb-3"><input type="date" class="form-control" id="inpDate"></div>
+            <div class="row">
+              <div class="col-6 mb-3"><select class="form-select" id="inpFundSource"></select></div>
+              <div class="col-6 mb-3" id="divToFund" style="display:none"><select class="form-select" id="inpFundDest"></select></div>
+            </div>
+            <div class="mb-3" id="divCategory"><select class="form-select" id="inpCategory"></select></div>
+            <div class="mb-3">
+              <input type="text" class="form-control fw-bold fs-5 text-warning" id="inpAmount" placeholder="0" inputmode="numeric">
+            </div>
+            <div class="mb-3"><input type="text" class="form-control" id="inpNote" placeholder="Ghi chú..."></div>
+            <button type="button" class="btn-main mt-2 shadow" onclick="saveData()">LƯU GIAO DỊCH</button>
+          </form>
+        </div>
+
+        <div id="tab-history" class="tab-content">
+          <div class="d-flex justify-content-between align-items-center mt-4 mb-3 ps-2 pe-2">
+            <h5 class="fw-bold mb-0">Lịch sử giao dịch</h5>
+            <div class="d-flex gap-2">
+              <button class="btn btn-sm btn-outline-secondary fw-bold" onclick="undoArchive()" title="Hoàn tác lần nén cuối">
+                <i class="bi bi-arrow-counterclockwise"></i>
+              </button>
+              <button class="btn btn-sm btn-warning fw-bold text-dark shadow-sm" onclick="showCompressionMenu()">
+                <i class="bi bi-file-earmark-zip-fill"></i> Nén bộ nhớ
+              </button>
+            </div>
+          </div>
+          <div class="filter-group mb-3 d-flex gap-2 px-2 overflow-auto" style="white-space: nowrap;">
+            <button class="btn btn-sm btn-outline-dark filter-btn active" onclick="setHistFilter('week', this)">Tuần này</button>
+            <button class="btn btn-sm btn-outline-dark filter-btn" onclick="setHistFilter('month', this)">Tháng này</button>
+            <button class="btn btn-sm btn-outline-dark filter-btn" onclick="setHistFilter('all', this)">Tất cả</button>
+            <button class="btn btn-sm btn-outline-dark filter-btn" onclick="setHistFilter('custom', this)">Tùy chỉnh</button>
+          </div>
+          <div id="histCustomDate" class="custom-date-range row g-2 mb-3 px-2" style="display:none">
+            <div class="col-5"><input type="date" class="form-control form-control-sm" id="histStart"></div>
+            <div class="col-5"><input type="date" class="form-control form-control-sm" id="histEnd"></div>
+            <div class="col-2"><button class="btn btn-sm btn-warning w-100" onclick="renderHistoryList()"><i class="bi bi-search"></i></button></div>
+          </div>
+          <div id="ui-history-list">
+            <div class="glowing-dots mt-5" style="background:none"><span></span><span></span><span></span></div>
+          </div>
+        </div>
+
+        <div id="tab-manage" class="tab-content">
+          <h5 class="fw-bold mb-3 mt-4 ps-2">Cài đặt</h5>
+          <div class="card-box">
+            <h6 class="fw-bold text-warning mb-3">Danh mục</h6>
+            <button class="btn btn-warning btn-sm w-100 mb-3 fw-bold" onclick="addCat()">+ THÊM MỚI</button>
+            <ul class="list-group list-group-flush" id="listCat"></ul>
+          </div>
+          <div class="card-box mt-3">
+            <h6 class="fw-bold text-primary mb-3">Quỹ tiền</h6>
+            <button class="btn btn-primary btn-sm w-100 mb-3 fw-bold" onclick="addFund()">+ TẠO QUỸ MỚI</button>
+            <ul class="list-group list-group-flush" id="listFund"></ul>
+          </div>
+          <div class="card-box mt-3">
+            <h6 class="fw-bold text-success mb-3"><i class="bi bi-archive"></i> Kho lưu trữ (JSON)</h6>
+            <button class="btn btn-outline-success btn-sm w-100 mb-3 fw-bold" onclick="showArchives()">
+            KIỂM TRA BẢN LƯU
+            </button>
+            <div id="archiveList" class="list-group list-group-flush"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <button id="install-btn"><i class="bi bi-download me-2"></i>CÀI ĐẶT MEOW FIN</button>
+
+  <script>
+    // ===============================================
+    // KẾT NỐI API VÀ LƯU ĐỆM CHUYÊN NGHIỆP
+    // ===============================================
+
+    // LƯU Ý: THAY ĐƯỜNG LINK DƯỚI ĐÂY BẰNG LINK API MỚI CỦA BẠN NẾU CÓ
+    const API_URL = "https://script.google.com/macros/s/AKfycbxlv3OI0Hvw1obMuKwlx6Y3hoOdfIV3dw0oKLfQacz66AM_qruN4i9a1QkfW9uamIa8YA/exec"; 
+
+    let GLOBAL_DATA = { history:[], funds:[], categories:[], balances:{} };
+    let CHART_COMBINED = null; 
+    let CHART_FUND = null; 
+    let CURRENT_HIST_FILTER = 'week';
+    const PIE_COLORS = ['#ffc107', '#fd7e14', '#dc3545', '#e83e8c', '#6f42c1', '#0d6efd', '#0dcaf0', '#198754', '#20c997', '#6c757d'];
+    let currentFetchId = 0;
+
+    // --- PWA INSTALL LOGIC ---
+    let deferredPrompt;
+    const installBtn = document.getElementById('install-btn');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredPrompt = e;
+        installBtn.style.display = 'block';
+    });
+
+    installBtn.addEventListener('click', async () => {
+        installBtn.style.display = 'none';
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        console.log(`User response to the install prompt: ${outcome}`);
+        deferredPrompt = null;
+    });
+
+    // --- HÀM LÕI GỌI API (Thay thế google.script.run) ---
+    async function callGoogleApi(action, payload = null) {
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: action, payload: payload })
+            });
+            const result = await response.json();
+            if (result.status === 'success') return result.data;
+            throw new Error(result.message);
+        } catch (error) {
+            console.error("API Error:", error);
+            Swal.fire('Lỗi', 'Không thể kết nối đến máy chủ Google.', 'error');
+            throw error;
+        }
+    }
+
+    // --- KHỞI ĐỘNG APP ---
+    window.addEventListener('load', function() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
+        }
+        initApp();
+    });
+
+    document.getElementById('inpAmount').oninput = function() { 
+        let v = this.value.replace(/[^0-9]/g, ''); 
+        if(v) this.value = parseInt(v).toLocaleString('vi-VN'); 
+    };
+
+    function initApp() { 
+        // Lấy Cache đổ ra liền lập tức
+        const cachedData = localStorage.getItem('meowFinCache');
+        if (cachedData) {
+            try {
+                GLOBAL_DATA = JSON.parse(cachedData);
+                renderDashboard(GLOBAL_DATA, true); 
+            } catch (e) { console.error("Lỗi đọc cache"); }
+        }
+        
+        // Chạy ngầm gọi API mạng
+        loadData(); 
+        
+        // Thiết lập ngày tháng mặc định
+        document.getElementById('inpDate').valueAsDate = new Date(); 
+        const d = new Date();
+        const f = new Date(d.getFullYear(), d.getMonth(), 1).toISOString().split('T')[0];
+        const t = d.toISOString().split('T')[0]; 
+        ['repStart','repEnd','histStart','histEnd'].forEach(id => { 
+            if(id.includes('Start')) document.getElementById(id).value = f; 
+            else document.getElementById(id).value = t; 
+        }); 
+    }
+
+    function switchTab(id, el) { 
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); 
+        document.getElementById(id).classList.add('active'); 
+        
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active')); 
+        const idx = {'tab-home':0,'tab-report':1,'tab-input':2,'tab-history':3,'tab-manage':4}[id]; 
+        document.querySelectorAll('.nav-item')[idx].classList.add('active'); 
+        
+        if (id === 'tab-report') renderCharts(); 
+        if (id === 'tab-history') renderHistoryList();
+    }
+
+    function animateMoney(element, endValue, duration) {
+        if (!element) return;
+        if (element.animationId) window.cancelAnimationFrame(element.animationId);
+        
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            const easeProgress = 1 - Math.pow(1 - progress, 3); 
+            const currentVal = Math.floor(easeProgress * endValue);
+            element.innerText = currentVal.toLocaleString('vi-VN');
+            if (progress < 1) {
+                element.animationId = window.requestAnimationFrame(step);
+            } else {
+                element.innerText = Number(endValue).toLocaleString('vi-VN');
+            }
+        };
+        element.animationId = window.requestAnimationFrame(step);
+    }
+
+    // ===============================================
+    // CÁC HÀM GIAO TIẾP DỮ LIỆU BẰNG API FETCH
+    // ===============================================
+
+    function loadData() { 
+        let fetchId = ++currentFetchId; 
+        
+        if (!localStorage.getItem('meowFinCache')) {
+            const dotsHtml = '<div class="glowing-dots"><span></span><span></span><span></span></div>';
+            document.getElementById('ui-total').innerHTML = dotsHtml;
+            document.getElementById('ui-funds-list').innerHTML = dotsHtml;
+        }
+
+        callGoogleApi('getAppData').then(res => { 
+            if (fetchId !== currentFetchId) return;
+            if (JSON.stringify(res) === localStorage.getItem('meowFinCache')) return; // Không đổi thì không vẽ lại
+
+            GLOBAL_DATA = res; 
+            localStorage.setItem('meowFinCache', JSON.stringify(res));
+            renderDashboard(res, false); 
+        }); 
+    }
+
+    function saveData() { 
+        const amt = document.getElementById('inpAmount').value.replace(/\./g, ''); 
+        if(!amt) return Swal.fire({title:'Thiếu số tiền!', icon:'warning', confirmButtonColor:'#ffc107'}); 
+        Swal.fire({title:'Đang lưu...', didOpen:()=>Swal.showLoading(), allowOutsideClick:false}); 
+        
+        const payload = { 
+            date:document.getElementById('inpDate').value, 
+            type:document.querySelector('input[name="type"]:checked').value, 
+            category:document.getElementById('inpCategory').value, 
+            amount:amt, 
+            note:document.getElementById('inpNote').value, 
+            fund:document.getElementById('inpFundSource').value, 
+            toFund:document.getElementById('inpFundDest').value 
+        };
+
+        callGoogleApi('addData', payload).then(() => { 
+            Swal.close(); 
+            document.getElementById('inpAmount').value=''; 
+            document.getElementById('inpNote').value=''; 
+            switchTab('tab-home'); 
+            loadData(); 
+        }); 
+    }
+
+    function delTx(idx) { 
+        Swal.fire({title:'Xóa?', showCancelButton:true, confirmButtonColor:'#d33'}).then(r => { 
+            if(r.isConfirmed) {
+                Swal.fire({title: 'Đang xóa...', didOpen: () => Swal.showLoading()});
+                callGoogleApi('deleteTransaction', idx).then(() => {
+                    Swal.close();
+                    loadData();
+                });
+            }
+        }); 
+    }
+
+    // --- CÁC HÀM QUẢN LÝ QUỸ & DANH MỤC ---
+    function addCat() { Swal.fire({title:'Thêm danh mục', input:'text', showCancelButton:true}).then(r => { if(r.value) { Swal.fire({title:'Đang lưu...', didOpen:()=>Swal.showLoading()}); callGoogleApi('addCategory', r.value).then(()=>{ Swal.close(); loadData(); }); } }); }
+    function addFund() { Swal.fire({title:'Thêm quỹ', input:'text', showCancelButton:true}).then(r => { if(r.value) { Swal.fire({title:'Đang lưu...', didOpen:()=>Swal.showLoading()}); callGoogleApi('createFund', r.value).then(()=>{ Swal.close(); loadData(); }); } }); }
+    
+    function delCat(n) { 
+        Swal.fire({ title: 'Xóa danh mục?', html: `Xóa <b>${n}</b>?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#6c757d', confirmButtonText: 'Xóa ngay' }).then(r => { 
+            if(r.isConfirmed) {
+                Swal.fire({title: 'Đang xóa...', didOpen: () => Swal.showLoading()});
+                callGoogleApi('deleteCategory', n).then(() => { Swal.close(); loadData(); }); 
+            }
+        }); 
+    }
+
+    function delFund(n) { 
+        Swal.fire({ title: 'Xóa quỹ tiền?', html: `Xóa <b>${n}</b>?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#6c757d', confirmButtonText: 'Xóa ngay' }).then(r => { 
+            if(r.isConfirmed) {
+                Swal.fire({title: 'Đang xóa...', didOpen: () => Swal.showLoading()});
+                callGoogleApi('deleteFund', n).then(() => { Swal.close(); loadData(); }); 
+            }
+        }); 
+    }
+
+    // --- TÍNH NĂNG NÉN BỘ NHỚ ---
+    function showCompressionMenu() {
+      Swal.fire({
+        title: 'Nén dữ liệu',
+        text: 'Chọn khoảng thời gian bạn muốn đóng sổ và lưu trữ:',
+        input: 'radio',
+        inputOptions: { 'week': 'Cũ hơn 7 ngày (Giữ lại tuần này)', 'month': 'Trước tháng này (Giữ lại tháng này)', 'year': 'Trước năm nay', 'custom': 'Tùy chọn ngày...' },
+        inputValue: 'month', 
+        showCancelButton: true, confirmButtonColor: '#ffc107', confirmButtonText: 'Thực hiện nén', cancelButtonText: 'Hủy'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          if (result.value === 'custom') showCustomCompressionDialog();
+          else executeCompression(result.value);
+        }
+      });
+    }
+
+    function showCustomCompressionDialog() {
+      Swal.fire({
+        title: 'Chọn khoảng nén',
+        html: `<div class="text-start"><label>Từ ngày:</label><input type="date" id="archiveStart" class="form-control mb-2"><label>Đến ngày:</label><input type="date" id="archiveEnd" class="form-control"></div>`,
+        showCancelButton: true, confirmButtonColor: '#ffc107',
+        preConfirm: () => {
+          const s = document.getElementById('archiveStart').value;
+          const e = document.getElementById('archiveEnd').value;
+          if (!s || !e) Swal.showValidationMessage('Vui lòng chọn ngày');
+          return { start: s, end: e };
+        }
+      }).then((r) => {
+        if (r.isConfirmed) executeCompression(r.value.start, r.value.end);
+      });
+    }
+
+    function executeCompression(p1, p2 = null) {
+      Swal.fire({ title: 'Đang xử lý...', text: 'Đang tạo file nén và tính toán lại số dư...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+      callGoogleApi('archiveDataByPeriod', {p1: p1, p2: p2}).then(msg => {
+        Swal.fire({ title: 'Kết quả', text: msg, icon: msg.includes('Lỗi') ? 'error' : 'success' });
+        loadData(); 
+      });
+    }
+
+    function undoArchive() {
+      Swal.fire({
+        title: 'Hoàn tác?', text: "Hệ thống sẽ đưa dữ liệu từ file JSON mới nhất quay lại Sheet và xóa file đó đi.", icon: 'question',
+        showCancelButton: true, confirmButtonColor: '#6c757d', confirmButtonText: 'Đồng ý hoàn tác'
+      }).then((r) => {
+        if (r.isConfirmed) {
+          Swal.fire({ title: 'Đang khôi phục...', didOpen: () => Swal.showLoading() });
+          callGoogleApi('undoLastArchive').then(msg => {
+            Swal.fire('Thông báo', msg, 'info');
+            loadData();
+          });
+        }
+      });
+    }
+
+    function showArchives() {
+      Swal.fire({ title: 'Đang tải danh sách...', didOpen: () => Swal.showLoading() });
+      callGoogleApi('getArchiveList').then(files => {
+        Swal.close();
+        let html = '';
+        if (files.length === 0) {
+          html = '<p class="text-center text-muted small">Chưa có file nén nào.</p>';
+        } else {
+          files.forEach(f => {
+            html += `
+              <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                <div class="text-truncate me-2" style="flex:1; cursor:pointer" onclick="viewArchiveData('${f.id}', '${f.name}')">
+                  <small class="fw-bold"><i class="bi bi-filetype-json text-warning me-2"></i>${f.name}</small>
+                </div>
+                <div class="d-flex gap-3">
+                  <i class="bi bi-pencil-square text-primary" onclick="renameArchive('${f.id}', '${f.name}')" style="cursor:pointer" title="Đổi tên"></i>
+                  <i class="bi bi-eye text-success" onclick="viewArchiveData('${f.id}', '${f.name}')" style="cursor:pointer" title="Xem chi tiết"></i>
+                </div>
+              </div>`;
+          });
+        }
+        document.getElementById('archiveList').innerHTML = html;
+      });
+    }
+
+    function renameArchive(id, oldName) {
+      let displayName = oldName.replace('.json', '');
+      Swal.fire({
+        title: 'Đổi tên bản lưu', input: 'text', inputValue: displayName, showCancelButton: true, confirmButtonText: 'Lưu tên mới', confirmButtonColor: '#ffc107', cancelButtonText: 'Hủy',
+        inputValidator: (value) => { if (!value) return 'Tên không được để trống!'; }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          Swal.fire({ title: 'Đang đổi tên...', didOpen: () => Swal.showLoading() });
+          callGoogleApi('renameArchiveFile', {id: id, newName: result.value}).then(msg => {
+            Swal.fire('Hoàn tất', msg, 'success');
+            showArchives(); 
+          });
+        }
+      });
+    }
+
+    function viewArchiveData(id, name) {
+      Swal.fire({ title: 'Đang xử lý dữ liệu...', didOpen: () => Swal.showLoading() });
+      callGoogleApi('getArchiveContent', id).then(data => {
+        if (data.error) return Swal.fire('Lỗi', data.error, 'error');
+
+        let totalThu = 0, totalChi = 0, chartDataDaily = {}, chartDataCat = {};   
+        data.forEach(item => {
+          let amt = Number(item.amount) || 0;
+          let date = item.date;
+          if (item.type === 'Thu') totalThu += amt;
+          if (item.type === 'Chi') {
+            totalChi += amt;
+            chartDataCat[item.category] = (chartDataCat[item.category] || 0) + amt;
+          }
+          if (!chartDataDaily[date]) chartDataDaily[date] = { thu: 0, chi: 0 };
+          if (item.type === 'Thu') chartDataDaily[date].thu += amt;
+          if (item.type === 'Chi') chartDataDaily[date].chi += amt;
+        });
+
+        let html = `
+          <div style="text-align: left; font-family: 'Be Vietnam Pro', sans-serif;">
+            <div class="d-flex gap-2">
+                <div class="flex-fill p-2 rounded-3 bg-success bg-opacity-10 border border-success border-opacity-25 text-center">
+                <small class="text-success fw-bold">Tổng Thu</small><br>
+                <span class="fw-bold text-success">+<span id="anim-popup-thu">0</span></span>
+                </div>
+                  <div class="flex-fill p-2 rounded-3 bg-danger bg-opacity-10 border border-danger border-opacity-25 text-center">
+                  <small class="text-danger fw-bold">Tổng Chi</small><br>
+                  <span class="fw-bold text-danger">-<span id="anim-popup-chi">0</span></span>
+                  </div>
+            </div>
+            <div class="row g-2 mb-4 mt-2">
+              <div class="col-12"><canvas id="archiveChartBar" style="height:200px"></canvas></div>
+              <div class="col-12 mt-3"><canvas id="archiveChartPie" style="height:200px"></canvas></div>
+            </div>
+            <h6 class="fw-bold mb-2"><i class="bi bi-list-ul"></i> Chi tiết giao dịch</h6>
+            <div class="table-responsive" style="max-height: 300px; font-size: 0.75rem;">
+              <table class="table table-sm table-hover border">
+                <thead class="table-light sticky-top">
+                  <tr><th>Ngày</th><th>Mục</th><th>Số tiền</th></tr>
+                </thead>
+                <tbody>
+                  ${data.map(item => `
+                    <tr>
+                      <td>${item.date && item.date.includes('-') ? item.date.split('-').reverse().slice(0,2).join('/') : item.date}</td>
+                      <td class="text-truncate" style="max-width:100px">${item.category || (item.type === 'Chuyen' ? 'Chuyển tiền' : '-')}</td>
+                      <td class="text-end ${item.type==='Thu'?'text-success':'text-danger'} fw-bold">${Number(item.amount).toLocaleString()}</td>
+                    </tr>`).join('')}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+
+        Swal.fire({
+          title: `<small class="fs-6 text-muted">Bản lưu:</small><br>${name}`, html: html, width: '98%',
+          showDenyButton: true, showCancelButton: true, showConfirmButton: false, 
+          denyButtonText: '<i class="bi bi-arrow-counterclockwise"></i> Khôi phục vào sổ', denyButtonColor: '#198754', 
+          cancelButtonText: 'Đóng', cancelButtonColor: '#6c757d',
+          didOpen: () => {
+            const days = Object.keys(chartDataDaily).sort();
+            animateMoney(document.getElementById('anim-popup-thu'), totalThu, 1200);
+            animateMoney(document.getElementById('anim-popup-chi'), totalChi, 1200);
+            new Chart(document.getElementById('archiveChartBar'), {
+              type: 'bar',
+              data: { labels: days.map(d => d.split('-').reverse().slice(0,2).join('/')),
+                datasets: [ { label: 'Thu', data: days.map(d => chartDataDaily[d].thu), backgroundColor: '#198754' }, { label: 'Chi', data: days.map(d => chartDataDaily[d].chi), backgroundColor: '#dc3545' } ] },
+              options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
+            const cats = Object.keys(chartDataCat);
+            new Chart(document.getElementById('archiveChartPie'), {
+              type: 'doughnut',
+              data: { labels: cats, datasets: [{ data: Object.values(chartDataCat), backgroundColor: PIE_COLORS }] },
+              options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 10, font: { size: 10 } } } } }
+            });
+          }
+        }).then((result) => {
+          if (result.isDenied) {
+            Swal.fire({
+              title: 'Xác nhận khôi phục?', text: "Dữ liệu sẽ được chép ngược lại vào Google Sheet và file lưu trữ này sẽ bị xóa.", icon: 'warning',
+              showCancelButton: true, confirmButtonText: 'Đồng ý', confirmButtonColor: '#198754'
+            }).then((r) => {
+              if (r.isConfirmed) {
+                Swal.fire({ title: 'Đang khôi phục...', didOpen: () => Swal.showLoading() });
+                callGoogleApi('restoreDataFromDrive', id).then(msg => {
+                  Swal.fire('Thành công', msg, 'success');
+                  loadData(); 
+                  showArchives(); 
+                });
+              }
+            });
+          }
+        });
+      });
+    }
+
+    // ===============================================
+    // CÁC HÀM VẼ GIAO DIỆN CHÍNH
+    // ===============================================
+
+    function renderDashboard(data, isFromCache) {
+        const totalEl = document.getElementById('ui-total');
+        totalEl.innerHTML = '<span id="anim-total">0</span> ₫';
+        if (isFromCache) document.getElementById('anim-total').innerText = Number(data.total).toLocaleString('vi-VN');
+        else animateMoney(document.getElementById('anim-total'), Number(data.total), 600);
+        
+        let h = ''; 
+        data.funds.forEach((f, idx) => { 
+            h += `<div class="card-box d-flex justify-content-between py-3">
+                    <div class="fw-bold"><i class="bi bi-wallet2 text-warning me-2"></i>${f}</div>
+                    <div class="fw-bold text-success"><span id="anim-fund-${idx}">0</span> ₫</div>
+                  </div>`; 
+        }); 
+        document.getElementById('ui-funds-list').innerHTML = h; 
+        
+        data.funds.forEach((f, idx) => {
+            const el = document.getElementById(`anim-fund-${idx}`);
+            const val = Number(data.balances[f] || 0);
+            if(isFromCache) el.innerText = val.toLocaleString('vi-VN');
+            else animateMoney(el, val, 1000 + (idx * 200));
+        });
+        
+        renderHistoryList(); 
+        
+        let fO = data.funds.map(f => `<option value="${f}">${f}</option>`).join(''); 
+        document.getElementById('inpFundSource').innerHTML = fO; 
+        document.getElementById('inpFundDest').innerHTML = fO; 
+        
+        const currentRepFund = document.getElementById('reportFundFilter').value;
+        document.getElementById('reportFundFilter').innerHTML = '<option value="all">Tất cả các quỹ</option>' + fO;
+        if(data.funds.includes(currentRepFund)) document.getElementById('reportFundFilter').value = currentRepFund;
+
+        document.getElementById('inpCategory').innerHTML = data.categories.map(c => `<option value="${c}">${c}</option>`).join(''); 
+
+        const rL = (a, n, c) => a.map(i => `<li class="list-group-item d-flex justify-content-between px-0 border-0">${i}<i class="bi bi-trash text-${c}" onclick="${n}('${i}')"></i></li>`).join(''); 
+        document.getElementById('listCat').innerHTML = rL(data.categories, 'delCat', 'danger'); 
+        document.getElementById('listFund').innerHTML = rL(data.funds, 'delFund', 'primary'); 
+
+        if(document.getElementById('tab-report').classList.contains('active')) renderCharts(); 
+    }
+
+    function renderHistoryList() { 
+        const f = GLOBAL_DATA.history.filter(i => isDateInRange(i.timestamp, CURRENT_HIST_FILTER, 'histStart', 'histEnd')); 
+        let hH = f.length ? '' : '<p class="text-center py-5 text-muted">Không có dữ liệu</p>'; 
+        f.forEach(h => { 
+            let c = h.type==='Thu'?'money-inc':(h.type==='Chi'?'money-exp':'text-primary'); 
+            hH += `<div class="card-box py-3"><div class="d-flex justify-content-between"><div><div class="fw-bold">${h.type==='Chuyen'?`Chuyển: ${h.fund}➔${h.toFund}`:h.category}</div><small class="text-muted">${h.dateStr}${h.note?` • ${h.note}`:''}</small></div><div class="text-end"><div class="${c} fs-5">${h.type==='Chi'?'-':'+'}${Number(h.amount).toLocaleString()}</div><i class="bi bi-trash3 text-danger opacity-50" onclick="delTx(${h.rowIndex})"></i></div></div></div>`; 
+        }); 
+        document.getElementById('ui-history-list').innerHTML = hH; 
+    }
+
+    function renderCharts() { 
+        const rawFiltered = GLOBAL_DATA.history.filter(i => {
+            const inTimeRange = isDateInRange(i.timestamp, document.getElementById('reportFilter').value, 'repStart', 'repEnd');
+            const notCategory = String(i.category).trim() !== 'Số dư nén'; 
+            const notNote = !String(i.note).includes('Kết chuyển'); 
+            return inTimeRange && notCategory && notNote;
+        });
+
+        if (!rawFiltered.length && !GLOBAL_DATA.history.length) {
+            const loadingDots = '<div class="glowing-dots mt-5"><span></span><span></span><span></span></div>';
+            document.getElementById('chartCombined').parentElement.innerHTML = '<canvas id="chartCombined"></canvas>' + loadingDots;
+            return;
+        }
+
+        let tL = {}; 
+        rawFiltered.forEach(i => { 
+            let k = new Date(i.timestamp).toISOString().split('T')[0]; 
+            if(!tL[k]) tL[k] = {in:0, ex:0, d:i.dateStr.substring(0,5)}; 
+            if(i.type==='Thu') tL[k].in += i.amount; 
+            if(i.type==='Chi') tL[k].ex += i.amount; 
+        }); 
+        const sK = Object.keys(tL).sort(); 
+        
+        if(CHART_COMBINED) CHART_COMBINED.destroy(); 
+        CHART_COMBINED = new Chart(document.getElementById('chartCombined'), { 
+            type:'bar', 
+            data:{ labels:sK.map(k=>tL[k].d), datasets:[ {label:'Chi', data:sK.map(k=>tL[k].ex), type:'line', borderColor:'#dc3545', tension:0.4, yAxisID:'y1'}, {label:'Thu', data:sK.map(k=>tL[k].in), backgroundColor:'rgba(25,135,84,0.1)', borderColor:'#198754', borderWidth:2, borderRadius:5, yAxisID:'y'} ] }, 
+            options:{ responsive:true, maintainAspectRatio:false, plugins: { legend: { display: false } }, scales:{ y:{ position:'left', title:{display:true,text:'Thu'}, grid:{display:false}, ticks: { display: false } }, y1:{ position:'right', title:{display:true,text:'Chi'}, grid:{drawOnChartArea:false}, ticks: { display: false } } } } 
+        }); 
+
+        const selectedFund = document.getElementById('reportFundFilter').value;
+        let pieData = {}; let totalChiFund = 0;
+        rawFiltered.forEach(i => {
+            if (i.type === 'Chi') {
+                if (selectedFund === 'all' || i.fund === selectedFund) {
+                    if (!pieData[i.category]) pieData[i.category] = 0;
+                    pieData[i.category] += i.amount;
+                    totalChiFund += i.amount;
+                }
+            }
+        });
+
+        document.getElementById('fundTotalDisplay').innerText = totalChiFund > 0 ? `Tổng chi thực tế: -${totalChiFund.toLocaleString()} ₫` : 'Không có chi tiêu thực tế';
+        
+        const pieLabels = Object.keys(pieData); const pieValues = Object.values(pieData);
+        if(CHART_FUND) CHART_FUND.destroy();
+        if (pieValues.length > 0) {
+            CHART_FUND = new Chart(document.getElementById('chartFund'), {
+                type: 'doughnut', data: { labels: pieLabels, datasets: [{ data: pieValues, backgroundColor: PIE_COLORS, borderWidth: 0 }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: {size: 11} } } } }
+            });
+        }
+    }
+
+    function isDateInRange(ts, type, sID, eID) { 
+        const now = new Date(); 
+        if(type==='all') return true; 
+        if(type==='week') { let day = now.getDay() || 7; return ts >= new Date(now.setDate(now.getDate() - day + 1)).setHours(0,0,0,0); }
+        if(type==='month') return ts >= new Date(now.getFullYear(), now.getMonth(), 1).getTime(); 
+        if(type==='year') return ts >= new Date(now.getFullYear(), 0, 1).getTime();
+        if(type==='custom') { const s = new Date(document.getElementById(sID).value).setHours(0,0,0,0), e = new Date(document.getElementById(eID).value).setHours(23,59,59,999); return ts >= s && ts <= e; } 
+        return true; 
+    }
+
+    function setHistFilter(t, b) { 
+        CURRENT_HIST_FILTER = t; 
+        document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active')); 
+        b.classList.add('active'); 
+        document.getElementById('histCustomDate').style.display = t === 'custom' ? 'flex' : 'none'; 
+        renderHistoryList(); 
+    }
+
+    function handleReportFilter() { 
+        document.getElementById('reportCustomDate').style.display = document.getElementById('reportFilter').value === 'custom' ? 'flex' : 'none'; 
+        renderCharts(); 
+    }
+
+    function toggleMode() { 
+        const is = document.querySelector('input[name="type"]:checked').value === 'Chuyen'; 
+        document.getElementById('divToFund').style.display = is?'block':'none'; 
+        document.getElementById('divCategory').style.display = is?'none':'block'; 
+    }
+
+    function calcWithdraw() { 
+        const cur = GLOBAL_DATA.balances['Tiền mặt']||0; 
+        Swal.fire({
+            title:'Rút tiền', html:`Tiền mặt hiện tại: <b>${cur.toLocaleString()}đ</b><br>Nhập số tiền mong muốn:`, input:'text', confirmButtonColor:'#ffc107', showCancelButton:true,
+            didOpen: () => { const input = Swal.getInput(); input.oninput = function() { let v = this.value.replace(/[^0-9]/g, ''); if(v) this.value = parseInt(v).toLocaleString('vi-VN'); }; }
+        }).then(r => { 
+            if(r.isConfirmed && r.value) { 
+                const t = parseInt(r.value.replace(/\./g,'')); const n = t-cur; 
+                if(n<=0) return Swal.fire('Đã đủ tiền!', '', 'info'); 
+                const d = Math.floor(n/50000)*50000; const l = n - d;
+                Swal.fire('Kết quả', `Rút: <b class="fs-4 text-success">${d.toLocaleString()}đ</b><br>Lẻ: ${l.toLocaleString()}đ`, 'success'); 
+            } 
+        }); 
+    }
+  </script>
+</body>
+</html>
